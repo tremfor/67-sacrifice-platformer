@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3 uid="uid://b7dr0m4u8iufu"]
+
+[ext_resource type="Texture2D" uid="uid://l3fat7lb2snq" path="res://assets/Sprites/little-man-1 (1).png" id="1_ogqes"]
+[ext_resource type="Script" uid="uid://bp0pu8sxf03n6" path="res://assets/scripts/player_controller.gd" id="1_qrc4i"]
+[ext_resource type="Script" uid="uid://dewpvdf8dse2y" path="res://assets/scripts/player_animator.gd" id="2_0o5ai"]
+
+[sub_resource type="Animation" id="Animation_0o5ai"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../PlayerAnimator/Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 32, 32)]
+}
+
+[sub_resource type="Animation" id="Animation_qrc4i"]
+resource_name = "walk"
+step = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../PlayerAnimator/Sprite2D:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(0, 0, 32, 32), Rect2(32, 0, 32, 32), Rect2(0, 32, 32, 32), Rect2(32, 32, 32, 32)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0o5ai"]
+_data = {
+&"RESET": SubResource("Animation_0o5ai"),
+&"walk": SubResource("Animation_qrc4i")
+}
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qrc4i"]
+
+[node name="Player" type="CharacterBody2D"]
+position = Vector2(0, -15)
+script = ExtResource("1_qrc4i")
+speed = 7.5
+jump_power = 7.5
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+
+[node name="PlayerAnimator" type="Node2D" parent="." node_paths=PackedStringArray("player_controller", "animation_player", "sprite")]
+script = ExtResource("2_0o5ai")
+player_controller = NodePath("..")
+animation_player = NodePath("AnimationPlayer")
+sprite = NodePath("Sprite2D")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="PlayerAnimator"]
+root_node = NodePath("../../Camera2D")
+libraries = {
+&"": SubResource("AnimationLibrary_0o5ai")
+}
+autoplay = "walk"
+
+[node name="Sprite2D" type="Sprite2D" parent="PlayerAnimator"]
+texture = ExtResource("1_ogqes")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_qrc4i")
